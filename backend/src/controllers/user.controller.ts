@@ -32,7 +32,7 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
         expiresAt: new Date(Date.now() + 15 * 60 * 1000)
     })
 
-    const resetLink = `${process.env.BACKEND_URL}/resetpassword/${token}`
+    const resetLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/resetpassword/${token}`
 
     const transporter = createTransporter()
     await transporter.sendMail({
@@ -115,13 +115,13 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     res
         .cookie("accessToken", accessToken, {
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
             secure: process.env.NODE_ENV === "production",
             maxAge: 15 * 60 * 1000
         })
         .cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            sameSite: "strict",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
             secure: process.env.NODE_ENV === "production",
             maxAge: 7 * 24 * 60 * 60 * 1000
         })
@@ -221,10 +221,11 @@ export const refreshAccessToken = asyncHandler(async (req: Request, res: Respons
 
   const newAccessToken = user.createAccessToken()
 
-  res
+    res
     .cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      sameSite: "strict"
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: process.env.NODE_ENV === "production"
     })
     .json({ message: "Access token refreshed" })
 })

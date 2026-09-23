@@ -18,12 +18,12 @@ authRouter.route('/logout').post(verifyJWT, async (req: Request, res: Response) 
 
     res.clearCookie('accessToken', {
         httpOnly: true,
-        sameSite: 'strict',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
         secure: process.env.NODE_ENV === 'production'
     })
         .clearCookie('refreshToken', {
             httpOnly: true,
-            sameSite: 'strict',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
             secure: process.env.NODE_ENV === 'production'
         })
         .status(200)

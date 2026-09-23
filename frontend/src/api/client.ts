@@ -17,8 +17,8 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}): Pr
     credentials: "include"
   });
 
-  if (response.status === 401 && endpoint !== '/auth/refresh-token' && endpoint !== '/login') {
-    const refreshRes = await fetch(`${BASE_URL}/auth/refresh-token`, {
+  if (response.status === 401 && endpoint !== '/refresh-token' && endpoint !== '/login') {
+    const refreshRes = await fetch(`${BASE_URL}/refresh-token`, {
       method: "POST",
       credentials: "include"
     });
