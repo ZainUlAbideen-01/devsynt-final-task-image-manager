@@ -1,4 +1,5 @@
-const RAW_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const isProd = import.meta.env.PROD;
+const RAW_BASE_URL = isProd ? '/api' : (import.meta.env.VITE_API_URL || 'http://localhost:3000/api');
 const BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 
 export class ApiError extends Error {
