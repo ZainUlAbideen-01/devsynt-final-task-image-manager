@@ -12,6 +12,32 @@ import rateLimit from "express-rate-limit"
 
 const app = express()
 
+// Trust proxy is required when deploying to Vercel so rate limiting and cookies work correctly
+app.set("trust proxy", 1);
+
+// ALWAYS define CORS before other middlewares like rate-limit
+const allowedOrigins = [
+    "http://localhost:5173",
+    process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : null,
+    "https://imagehandler.vercel.app" // hardcoded fallback just in case
+].filter(Boolean) as string[];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin) {
+            return callback(null, true);
+        }
+        const originNormalized = origin.replace(/\/$/, '');
+        if (allowedOrigins.includes(originNormalized)) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked for origin: ${origin}`);
+            callback(null, false);
+        }
+    },
+    credentials: true
+}))
+
 // Apply rate limiting to all requests
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -22,22 +48,6 @@ const limiter = rateLimit({
 })
 
 app.use(limiter)
-
-const allowedOrigins = [
-    "http://localhost:5173",
-    process.env.FRONTEND_URL
-].filter(Boolean) as string[];
-
-app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true
-}))
 app.use(express.json())
 app.use(cookieParser())
 app.use('/api', router)
