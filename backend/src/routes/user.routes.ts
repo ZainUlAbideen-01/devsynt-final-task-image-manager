@@ -27,7 +27,7 @@ router.route('/verify/:token').get(asyncHandler(async (req: Request, res: Respon
 
     await Verification.deleteOne({ token: req.params.token });
 
-    res.redirect("http://localhost:5173/");
+    res.redirect(process.env.FRONTEND_URL || "http://localhost:5173/");
 }))
 
 export default router

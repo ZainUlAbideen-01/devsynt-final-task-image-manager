@@ -1,4 +1,5 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const RAW_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -8,7 +9,8 @@ export class ApiError extends Error {
 }
 
 export const apiClient = async (endpoint: string, options: RequestInit = {}): Promise<Response> => {
-  const url = `${BASE_URL}${endpoint}`;
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = `${BASE_URL}${cleanEndpoint}`;
   
   let response = await fetch(url, {
     ...options,
