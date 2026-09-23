@@ -32,7 +32,7 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
         expiresAt: new Date(Date.now() + 15 * 60 * 1000)
     })
 
-    const resetLink = `http://localhost:5173/resetpassword/${token}`
+    const resetLink = `${process.env.BACKEND_URL}/resetpassword/${token}`
 
     const transporter = createTransporter()
     await transporter.sendMail({
@@ -177,7 +177,7 @@ export const signUp = asyncHandler(async (req: Request, res: Response) => {
         subject: "Verify your email",
         html: `
           <h3>Verify your email</h3>
-          <a href="http://localhost:3000/api/verify/${token}">
+          <a href="${process.env.BACKEND_URL}/api/verify/${token}">
             Verify Email
           </a>
         `
